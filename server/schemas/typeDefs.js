@@ -25,9 +25,6 @@ const typeDefs = `
 
   type Query {
     me: User
-    users: [User]
-    user(_id: ID!): User
-    books: [Book]
   }
 
   type Mutation {
