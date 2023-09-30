@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const path = require('path');
@@ -7,12 +8,17 @@ const { authMiddleware } = require('./utils/auth');
 const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 
-const PORT = process.env.PORT || 3001;
+const MONGODB_URI = process.env.MONGODB_URI;
+const PORT = process.env.PORT || 5000;
 const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
 });
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Database connected!'))
+  .catch(err => console.error(err));
 
 const startApolloServer = async () => {
   await server.start();
@@ -33,11 +39,7 @@ const startApolloServer = async () => {
   }
 
   db.once('open', () => {
-    app.listen(PORT, () => {
-      console.log(`API server running on port ${PORT}!`);
-      console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
-    });
-  });
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));  });
 };
 
 startApolloServer();
